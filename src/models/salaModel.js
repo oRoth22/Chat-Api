@@ -1,24 +1,43 @@
 const db = require("./db");
 
-async function listarSalas() {
-    return await db.findAll("salas");
+let criarSala = async(nome, tipo, chave) => {
+    let sala = {
+      nome: nome,
+      tipo: tipo
+    };
+
+    if (tipo === "privada" && chave) {
+      sala.chave = chave;
+    }
+
+    return await db.insertOne("salas", sala);
+  }
+
+let listarSalas = async() => {
+    let salas = await db.findAll("salas");
+    return salas;
 }
 
-async function buscarSala(idsala) {
-    return await db.findOne("salas", idsala);
+let buscarSala = async (idsala) => {
+    return db.findOne("salas", idsala);
 }
 
-async function atualizarMensagens(sala) {
-    return await db.updateOne("salas", sala, { _id: sala._id });
+let atualizarMensagens = async (sala) => {
+    return await db.updateOne("salas", sala,{ _id: sala._id });
 }
 
-async function buscarMensagens(idsala, timestamp) {
-    const sala = await buscarSala(idsala);
+let buscarMensagens = async (idsala, timestamp) => {
+    let sala = await buscarSala(idsala);
     if (sala.msgs) {
-        const msgs = sala.msgs.filter(msg => msg.timestamp >= timestamp);
+        let msgs = [];
+        sala.msgs.forEach((msg) => {
+            if(msg.timestamp >= timestamp){
+                msg.push(msg);
+            }
+        });
         return msgs;
     }
     return [];
 }
 
-module.exports = { listarSalas, buscarSala, atualizarMensagens, buscarMensagens };
+module.exports = { listarSalas, buscarSala, atualizarMensagens, buscarMensagens, criarSala };

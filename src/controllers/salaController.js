@@ -16,12 +16,28 @@ exports.getSalas = () => {
 
 exports.entrar = async (iduser, idsala) => {
   const sala = await salaModel.buscarSala(idsala);
+  if (!sala) {
+    throw new Error('Sala não encontrada');
+  }
   let user = await usuarioModel.buscarUsuario(iduser);
   user.sala = { _id: sala._id, nome: sala.nome, tipo: sala.tipo };
   if (await usuarioModel.alterarUsuario(user)) {
-    return { msg: "OK", timestamp: timestamp = Date.now() };
+    return { msg: "OK", timestamp: Date.now() };
   }
   return false;
+}
+
+exports.criarSala=async(nome, tipo, chave) => {
+  let sala = {
+    nome: nome,
+    tipo: tipo
+  };
+
+  if (tipo === "privada" && chave) {
+    sala.chave = chave;
+  }
+
+  return await salaModel.criarSala(sala);
 }
 
 exports.enviarMensagem = async (nick, msg, idsala) => {
