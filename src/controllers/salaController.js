@@ -19,13 +19,17 @@ exports.entrar = async (iduser, idsala) => {
   if (!sala) {
     throw new Error('Sala não encontrada');
   }
-  let user = await usuarioModel.buscarUsuario(iduser);
+  const user = await usuarioModel.buscarUsuario(iduser);
+  if (!user) {
+    throw new Error('Usuário não encontrado');
+  }
   user.sala = { _id: sala._id, nome: sala.nome, tipo: sala.tipo };
   if (await usuarioModel.alterarUsuario(user)) {
     return { msg: "OK", timestamp: Date.now() };
   }
   return false;
-}
+};
+
 
 exports.criarSala=async(nome, tipo, chave) => {
   let sala = {

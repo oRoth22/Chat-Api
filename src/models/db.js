@@ -21,7 +21,7 @@ let findOne = async (collection, _id) => {
   const db = await connect();
   let obj = await db.collection(collection).find({ _id: new ObjectId(_id) });
   if (obj)
-  return obj[0];
+    return obj[0];
   return false;
 }
 
@@ -31,8 +31,11 @@ let insertOne = async(collection,object) => {
 }
 
 let updateOne = async (collection, object, param) => {
+  if (typeof param !== 'object' || Object.keys(param).length === 0) {
+    console.log('Parameter must be a valid JavaScript object');
+  }
   const db = await connect();
-  let result = await db.collection(collection).updateOne(param, { $set: object });
+  let result = await db.collection(collection).updateOne(param, { $set: { field: false } });
   return result;
 }
 

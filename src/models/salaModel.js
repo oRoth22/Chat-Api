@@ -40,4 +40,28 @@ let buscarMensagens = async (idsala, timestamp) => {
     return [];
 }
 
-module.exports = { listarSalas, buscarSala, atualizarMensagens, buscarMensagens, criarSala };
+async function entrarNaSala(idUser, idSala) {
+    const sala = await db.findOne("salas", idSala);
+    if (!sala) {
+      return false;
+    }
+    const usuario = await db.findOne("usuarios", idUser);
+    if (!usuario) {
+      return false;
+    }
+    usuario.sala = { _id: sala._id, nome: sala.nome, tipo: sala.tipo };
+    const result = await db.updateOne("usuarios", usuario, { _id: usuario._id });
+    return result.modifiedCount > 0;
+  }
+  async function sairDaSala(idUser) {
+    const usuario = await db.findOne("usuarios", idUser);
+    if (!usuario) {
+      return false; 
+    }
+    usuario.sala = null; 
+    const result = await db.updateOne("usuarios", usuario, { _id: usuario._id });
+    return result.modifiedCount > 0;
+  }
+
+
+module.exports = { listarSalas, buscarSala, atualizarMensagens, buscarMensagens, criarSala, entrarNaSala, sairDaSala};
